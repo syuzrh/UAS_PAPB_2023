@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomRoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_button</item>
+        <!-- Anda bisa menambahkan atribut lain seperti padding, textColor, dll. -->
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    <style name="CustomTextView18Bold" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="fontFamily">@font/montserrat_bold</item>
+    </style>
+</resources>

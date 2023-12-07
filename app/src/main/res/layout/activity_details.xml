@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.DetailsActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="35dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <!-- Menggunakan ImageView dari XML -->
+                <ImageView
+                    android:id="@+id/backToHome"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/baseline_arrow_back_ios_24"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:gravity="center"
+                    android:text="Details Movie"
+                    android:textSize="17dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <!-- Menggunakan ImageView dari XML -->
+                <ImageView
+                    android:id="@+id/filmImage"
+                    android:layout_width="320dp"
+                    android:layout_height="400dp"
+                    android:src="@drawable/film" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/title_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:text="The Conjuring"
+                    android:textSize="20dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="left"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/director_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="Director: James Wan |"
+                    android:textSize="17dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/rate_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="4,9"
+                    android:textSize="17dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="left"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/genre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bgspinner"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:padding="15dp"
+                    android:text="Horror"
+                    android:textColor="@color/black"
+                    android:textSize="17dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="left"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:text="Storyline"
+                    android:textSize="20dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/story_line_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="Paranormal investigators Ed and Lorraine Warren work to help a family terrorized by an evil presence in their home."
+                    android:textSize="17dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/imgFilm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/film"
+        android:clickable="true"
+        android:onClick="onImageClick"/>
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="Film Title"
+        android:textSize="18dp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/imgRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rating 5"
+        android:fontFamily="@font/montserrat_semibold"
+        android:padding="5dp"
+        android:layout_marginBottom="20dp"/>
+
+</LinearLayout>

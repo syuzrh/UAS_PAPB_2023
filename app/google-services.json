@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "364973079880",
+    "project_id": "film-51e34",
+    "storage_bucket": "film-51e34.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364973079880:android:e1a3be526a25d635f0c77d",
+        "android_client_info": {
+          "package_name": "com.example.uas_papb_2023"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBymLQeWoeUrqJTRiCAcxtERwWfnPpFJns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
