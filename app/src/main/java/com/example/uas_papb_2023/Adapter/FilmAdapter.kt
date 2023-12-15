@@ -12,8 +12,9 @@ import com.example.uas_papb_2023.Activity.DetailsActivity
 import com.example.uas_papb_2023.Model.FilmModel
 import com.example.uas_papb_2023.R
 import com.bumptech.glide.Glide
+import com.example.uas_papb_2023.RoomDatabase.FilmEntity
 
-class FilmAdapter(private val context: Context, private val filmList: List<FilmModel>) :
+class FilmAdapter(private val context: Context, private var filmList: List<FilmEntity>) :
     RecyclerView.Adapter<FilmAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -45,14 +46,20 @@ class FilmAdapter(private val context: Context, private val filmList: List<FilmM
             intent.putExtra("title", film.title)
             intent.putExtra("imageUrl", film.imageUrl)
             intent.putExtra("rating", film.rating)
-            intent.putExtra("storyline", film.storyline)
-            intent.putExtra("director", film.director)
-            intent.putExtra("genre", film.genre)
+            intent.putExtra("storyline", film.storyline)  // Sesuaikan dengan properti yang sesuai di FilmEntity
+            intent.putExtra("director", film.director)    // Sesuaikan dengan properti yang sesuai di FilmEntity
+            intent.putExtra("genre", film.genre)          // Sesuaikan dengan properti yang sesuai di FilmEntity
             context.startActivity(intent)
         }
     }
 
     override fun getItemCount(): Int {
         return filmList.size
+    }
+
+    // Tambahkan fungsi setData untuk memperbarui data filmList
+    fun setData(newFilmList: List<FilmEntity>) {
+        filmList = newFilmList
+        notifyDataSetChanged()
     }
 }

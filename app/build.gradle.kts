@@ -4,6 +4,7 @@ plugins {
     id("com.google.gms.google-services")
     id ("kotlin-kapt")
     ("com.google.gms.google-services")
+    ("kotlin-android-extensions")
 }
 
 android {
@@ -51,9 +52,16 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     kapt ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.google.firebase:firebase-database:20.3.0")
+    implementation ("androidx.room:room-runtime:2.4.0")
+    kapt ("androidx.room:room-compiler:2.4.0")
+    implementation ("androidx.room:room-ktx:2.4.0")
+    implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
 }
