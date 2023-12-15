@@ -1,5 +1,9 @@
 package com.example.uas_papb_2023.Activity
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -7,11 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.uas_papb_2023.Model.FilmModel
 import com.example.uas_papb_2023.RoomDatabase.FilmDao
 import com.example.uas_papb_2023.databinding.ActivityAddDataBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.example.uas_papb_2023.RoomDatabase.FilmDatabase
 import com.example.uas_papb_2023.RoomDatabase.FilmEntity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -37,7 +39,6 @@ class AddDataActivity : AppCompatActivity() {
             addFilmToFirestoreAndRoom()
         }
 
-        // Handle click backToAdmin
         binding.backToAdmin.setOnClickListener {
             finish()
         }
@@ -53,20 +54,28 @@ class AddDataActivity : AppCompatActivity() {
         val director = binding.directorMv.text.toString()
         val genre = binding.genreMv.text.toString()
 
-        // Validasi data sebelum ditambahkan
         if (title.isNotEmpty() && imageUrl.isNotEmpty() && rating.isNotEmpty() &&
             storyline.isNotEmpty() && director.isNotEmpty() && genre.isNotEmpty()
         ) {
             Log.d("AddDataActivity", "All data is present, adding to Firestore and Room")
-            // Buat objek FilmModel
-            val film = FilmModel(title, imageUrl, rating, storyline, director, genre)
-            Log.d("AddDataActivity", "Film: $film")
 
-            // Tambahkan data ke Firestore
-            filmCollectionRef.add(film)
-                .addOnSuccessListener {
-                    // Setelah berhasil menambahkan ke Firestore, tambahkan juga ke Room Database
-                    val filmEntity = FilmEntity(
+            if (isOnline()) {
+                // Jika online, simpan ke Firestore
+                val film = FilmModel(title, imageUrl, rating, storyline, director, genre)
+                filmCollectionRef.add(film)
+                    .addOnSuccessListener {
+                        showToast("Success to add film to Firestore")
+                        Log.d("AddDataActivity", "Film added to Firestore")
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("AddDataActivity", "Error adding film to Firestore", e)
+                        showToast("Failed to add film to Firestore")
+                    }
+            } else {
+                // Jika offline, simpan ke RoomDatabase
+                insertFilmToRoom(
+                    FilmEntity(
                         title = title,
                         imageUrl = imageUrl,
                         rating = rating,
@@ -74,18 +83,11 @@ class AddDataActivity : AppCompatActivity() {
                         director = director,
                         genre = genre
                     )
-                    showToast("success to add film")
-
-                    Log.d("AddDataActivity", "Film added to Firestore and Room")
-                    // Setelah berhasil menambahkan, kembali ke halaman sebelumnya
-                    finish()
-                }
-                .addOnFailureListener { e ->
-                    Log.e("AddDataActivity", "Error adding film to Firestore", e)
-                    showToast("Failed to add film")
-                }
+                )
+                showToast("Film added to RoomDatabase (offline)")
+                finish()
+            }
         } else {
-            // Tampilkan pesan error jika ada data yang kosong
             Log.d("AddDataActivity", "Some data is missing")
             showToast("Please complete all data")
         }
@@ -99,5 +101,21 @@ class AddDataActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun isOnline(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+            return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                ?: false
+        } else {
+            val networkInfo = connectivityManager.activeNetworkInfo
+            return networkInfo?.isConnected ?: false
+        }
     }
 }

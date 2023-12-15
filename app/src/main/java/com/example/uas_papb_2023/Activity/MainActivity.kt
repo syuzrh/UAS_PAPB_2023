@@ -1,15 +1,11 @@
 package com.example.uas_papb_2023.Activity
 
+import HomeFragment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.uas_papb_2023.Adapter.FilmAdapter
 import com.example.uas_papb_2023.Fragment.AccountFragment
 import com.example.uas_papb_2023.Fragment.FavoriteFragment
-import com.example.uas_papb_2023.Fragment.HomeFragment
-import com.example.uas_papb_2023.Model.FilmModel
 import com.example.uas_papb_2023.databinding.ActivityMainBinding
 import com.example.uas_papb_2023.R
 

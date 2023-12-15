@@ -9,8 +9,8 @@ import com.example.uas_papb_2023.Fragment.RegisterFragment
 class TabAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            0 -> LoginFragment() // Ubah urutan fragmen
-            1 -> RegisterFragment() // Ubah urutan fragmen
+            0 -> LoginFragment()
+            1 -> RegisterFragment()
             else -> throw IllegalArgumentException("Invalid tab position")
         }
     }
@@ -21,8 +21,8 @@ class TabAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME
 
     override fun getPageTitle(position: Int): CharSequence? {
         return when (position) {
-            0 -> "Login" // Ubah urutan tab
-            1 -> "Register" // Ubah urutan tab
+            0 -> "Login"
+            1 -> "Register"
             else -> null
         }
     }

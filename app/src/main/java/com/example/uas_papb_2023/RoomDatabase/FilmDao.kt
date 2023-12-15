@@ -13,8 +13,4 @@ interface FilmDao {
 
     @Query("SELECT * FROM films")
     fun getAllFilmsList(): List<FilmEntity>
-
-    // Menggunakan Flow (jika menggunakan Room Database versi 2.3.0 atau yang lebih baru)
-    @Query("SELECT * FROM films")
-    fun getAllFilmsFlow(): List<FilmEntity>
 }

@@ -1,5 +1,6 @@
 package com.example.uas_papb_2023.Fragment
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -42,11 +43,21 @@ class AccountFragment : Fragment() {
 
         logoutButton.setOnClickListener {
             auth.signOut()
-            val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
+
+            // Cek status login sebelum menavigasi ke halaman login
+            val isLoggedIn = checkLoginStatus()
+            if (!isLoggedIn) {
+                val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            }
         }
 
         return view
+    }
+
+    private fun checkLoginStatus(): Boolean {
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("isLoggedIn", false)
     }
 }

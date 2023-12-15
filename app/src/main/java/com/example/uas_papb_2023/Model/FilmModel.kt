@@ -4,7 +4,7 @@ data class FilmModel(
     val title: String,
     val imageUrl: String,
     val rating: String,
-    val storyline: String,  // Pastikan properti ini ada
+    val storyline: String,
     val director: String,
     val genre: String
 )

@@ -64,4 +64,5 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.4.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+
 }

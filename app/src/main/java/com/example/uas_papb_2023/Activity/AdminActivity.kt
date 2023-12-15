@@ -1,6 +1,10 @@
 package com.example.uas_papb_2023.Activity
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +20,7 @@ import com.example.uas_papb_2023.RoomDatabase.FilmEntity
 import com.example.uas_papb_2023.databinding.ActivityAdminBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -53,7 +58,6 @@ class AdminActivity : AppCompatActivity() {
         adapter = FilmAdapter(this, mutableListOf())
         recyclerView.adapter = adapter
 
-        // Ambil data dari Firestore jika online, jika tidak ambil dari Room Database
         if (isOnline()) {
             loadFilmFromFirestore()
         } else {
@@ -62,10 +66,21 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun isOnline(): Boolean {
-        // Implementasi logika untuk memeriksa ketersediaan koneksi internet di sini
-        // Return true jika online, false jika offline
-        return true
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+            return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                ?: false
+        } else {
+            val networkInfo = connectivityManager.activeNetworkInfo
+            return networkInfo?.isConnected ?: false
+        }
     }
+
 
     private fun loadFilmFromFirestore() {
         Log.d("AdminActivity", "Mengambil data dari Firestore")
@@ -84,12 +99,12 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun getFilmDataFromRoom() {
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
+                Log.d("AdminActivity", "Trying to get films from Room")
                 val filmList = filmDao.getAllFilmsList()
                 Log.d("AdminActivity", "Number of films from Room: ${filmList.size}")
 
-                // Tampilkan dalam RecyclerView
                 runOnUiThread {
                     adapter.setData(filmList)
                 }

@@ -32,7 +32,6 @@ class FilmAdapter(private val context: Context, private var filmList: List<FilmE
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val film = filmList[position]
 
-        // Menggunakan Glide untuk memuat gambar
         Glide.with(context)
             .load(film.imageUrl)
             .into(holder.imgFilm)
@@ -40,15 +39,14 @@ class FilmAdapter(private val context: Context, private var filmList: List<FilmE
         holder.txtTitle.text = film.title
         holder.imgRating.text = film.rating
 
-        // Tambahkan listener untuk menangani klik pada gambar
         holder.imgFilm.setOnClickListener {
             val intent = Intent(context, DetailsActivity::class.java)
             intent.putExtra("title", film.title)
             intent.putExtra("imageUrl", film.imageUrl)
             intent.putExtra("rating", film.rating)
-            intent.putExtra("storyline", film.storyline)  // Sesuaikan dengan properti yang sesuai di FilmEntity
-            intent.putExtra("director", film.director)    // Sesuaikan dengan properti yang sesuai di FilmEntity
-            intent.putExtra("genre", film.genre)          // Sesuaikan dengan properti yang sesuai di FilmEntity
+            intent.putExtra("storyline", film.storyline)
+            intent.putExtra("director", film.director)
+            intent.putExtra("genre", film.genre)
             context.startActivity(intent)
         }
     }
@@ -57,7 +55,6 @@ class FilmAdapter(private val context: Context, private var filmList: List<FilmE
         return filmList.size
     }
 
-    // Tambahkan fungsi setData untuk memperbarui data filmList
     fun setData(newFilmList: List<FilmEntity>) {
         filmList = newFilmList
         notifyDataSetChanged()

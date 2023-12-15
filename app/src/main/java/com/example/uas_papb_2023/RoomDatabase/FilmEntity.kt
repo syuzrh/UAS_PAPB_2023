@@ -14,7 +14,6 @@ data class FilmEntity(
     var director: String = "",
     var genre: String = ""
 ) {
-    // Konstruktor tanpa argumen diperlukan oleh Firestore
     constructor() : this(0, "", "", "", "", "", "")
 }
 

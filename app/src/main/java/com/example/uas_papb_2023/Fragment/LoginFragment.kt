@@ -1,5 +1,6 @@
 package com.example.uas_papb_2023.Fragment
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -47,6 +48,7 @@ class LoginFragment : Fragment() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
+                    saveLoginStatus(true)  // Simpan status login ke SharedPreferences
                     val intent = Intent(activity, MainActivity::class.java)
                     intent.putExtra("user_email", email)
                     startActivity(intent)
@@ -55,5 +57,12 @@ class LoginFragment : Fragment() {
                     Toast.makeText(requireContext(), "Gagal login. Periksa kembali email dan password.", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun saveLoginStatus(isLoggedIn: Boolean) {
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isLoggedIn", isLoggedIn)
+        editor.apply()
     }
 }
