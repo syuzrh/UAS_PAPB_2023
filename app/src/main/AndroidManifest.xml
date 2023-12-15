@@ -24,10 +24,10 @@
             android:name=".Activity.AdminActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.MainActivity"
+            android:name=".Activity.LoginRegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.LoginRegisterActivity"
+            android:name=".Activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

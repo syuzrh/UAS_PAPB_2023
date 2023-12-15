@@ -1,6 +1,5 @@
 package com.example.uas_papb_2023.Fragment
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.uas_papb_2023.Activity.MainActivity
+import com.example.uas_papb_2023.Activity.LoginRegisterActivity
 import com.example.uas_papb_2023.R
 import com.google.firebase.auth.FirebaseAuth
 
@@ -48,21 +47,11 @@ class LoginFragment : Fragment() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    saveLoginStatus(true)  // Simpan status login ke SharedPreferences
-                    val intent = Intent(activity, MainActivity::class.java)
-                    intent.putExtra("user_email", email)
-                    startActivity(intent)
-                    requireActivity().finish()
+                    // Panggil metode onSuccessLogin() dari MainActivity
+                    (requireActivity() as LoginRegisterActivity).onSuccessLogin()
                 } else {
                     Toast.makeText(requireContext(), "Gagal login. Periksa kembali email dan password.", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
-
-    private fun saveLoginStatus(isLoggedIn: Boolean) {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putBoolean("isLoggedIn", isLoggedIn)
-        editor.apply()
     }
 }

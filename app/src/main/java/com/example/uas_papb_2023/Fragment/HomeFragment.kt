@@ -1,6 +1,6 @@
+package com.example.uas_papb_2023.Fragment
+
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -15,7 +15,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.uas_papb_2023.Activity.LoginRegisterActivity
 import com.example.uas_papb_2023.Adapter.FilmAdapter
 import com.example.uas_papb_2023.RoomDatabase.FilmDatabase
 import com.example.uas_papb_2023.RoomDatabase.FilmEntity
@@ -35,8 +34,6 @@ class HomeFragment : Fragment() {
     private val filmCollectionRef = firestore.collection("films")
     private lateinit var filmListLiveData: MutableLiveData<List<FilmEntity>>
     private lateinit var filmDatabase: FilmDatabase
-    private lateinit var sharedPreferences: SharedPreferences
-    private val sharedPreferencesKey = "userLoggedIn"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,33 +50,21 @@ class HomeFragment : Fragment() {
         filmDatabase = FilmDatabase.getDatabase(requireContext())
         filmListLiveData = MutableLiveData()
 
-        sharedPreferences = requireContext().getSharedPreferences(
-            "com.example.uas_papb_2023",
-            Context.MODE_PRIVATE
-        )
-
         val user = auth.currentUser
         val userEmail = user?.email
 
         binding.emailUser.text = userEmail
 
-        // Cek apakah pengguna sudah login sebelumnya
-        if (!isLoggedIn()) {
-            // Pengguna belum login, arahkan ke halaman login
-            redirectToLogin()
+        recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        if (isConnectedToInternet()) {
+            getFilmDataFromFirebase()
         } else {
-            // Pengguna sudah login, lanjutkan dengan proses normal
-            recyclerView = binding.recyclerView
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-            if (isConnectedToInternet()) {
-                getFilmDataFromFirebase()
-            } else {
-                getFilmDataFromRoomDatabase()
-            }
-
-            observeFilmList()
+            getFilmDataFromRoomDatabase()
         }
+
+        observeFilmList()
     }
 
     private fun isConnectedToInternet(): Boolean {
@@ -131,24 +116,5 @@ class HomeFragment : Fragment() {
     private fun updateRecyclerView(filmList: List<FilmEntity>) {
         val adapter = FilmAdapter(requireContext(), filmList)
         recyclerView.adapter = adapter
-    }
-
-    private fun isLoggedIn(): Boolean {
-        // Mengambil status login dari SharedPreferences
-        return sharedPreferences.getBoolean(sharedPreferencesKey, false)
-    }
-
-    private fun setLoggedInStatus(isLoggedIn: Boolean) {
-        // Menyimpan status login ke SharedPreferences
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(sharedPreferencesKey, isLoggedIn)
-        editor.apply()
-    }
-
-    private fun redirectToLogin() {
-        // Mengarahkan pengguna ke halaman login
-        val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
-        startActivity(intent)
-        requireActivity().finish()
     }
 }
