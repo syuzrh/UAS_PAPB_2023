@@ -16,4 +16,3 @@ data class FilmEntity(
 ) {
     constructor() : this(0, "", "", "", "", "", "")
 }
-

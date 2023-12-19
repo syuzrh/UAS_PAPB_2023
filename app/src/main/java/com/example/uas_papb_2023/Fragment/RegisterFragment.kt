@@ -11,12 +11,16 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.uas_papb_2023.Activity.LoginRegisterActivity
+import com.example.uas_papb_2023.Model.UserModel
+import com.example.uas_papb_2023.Model.UserRole
 import com.example.uas_papb_2023.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
+    private var userCollection = FirebaseFirestore.getInstance().collection("users")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,17 +51,28 @@ class RegisterFragment : Fragment() {
     private fun registerUser(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
-                try {
-                    if (task.isSuccessful) {
-                        Toast.makeText(requireContext(), "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
-                        saveLoginStatus(true)  // Simpan status login ke SharedPreferences
-                        finish()
-                    } else {
-                        Toast.makeText(requireContext(), "Gagal registrasi. Periksa kembali email dan password.", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(requireContext(), e.message.toString(), Toast.LENGTH_SHORT).show()
+                if (task.isSuccessful) {
+                    // Pengguna berhasil mendaftar, simpan informasi di Firestore
+                    val newUser = UserModel(auth.currentUser?.uid, email, password, UserRole.USER)
+                    saveUserToFirestore(newUser)
+                    Toast.makeText(requireContext(), "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
+                    saveLoginStatus(true)
+                    finish()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Gagal registrasi. Periksa kembali email dan password.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+            }
+    }
+
+    private fun saveUserToFirestore(newUser: UserModel) {
+        // Simpan informasi pengguna di Firestore
+        userCollection.document(newUser.id ?: "").set(newUser)
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Gagal menyimpan data pengguna di Firestore.", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -68,7 +83,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun saveLoginStatus(isLoggedIn: Boolean) {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences("shared", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", isLoggedIn)
         editor.apply()

@@ -15,6 +15,7 @@ import com.example.uas_papb_2023.RoomDatabase.FilmDatabase
 import com.example.uas_papb_2023.RoomDatabase.FilmEntity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -59,42 +60,41 @@ class AddDataActivity : AppCompatActivity() {
         ) {
             Log.d("AddDataActivity", "All data is present, adding to Firestore and Room")
 
+            val filmEntity = FilmEntity(
+                title = title,
+                imageUrl = imageUrl,
+                rating = rating,
+                storyline = storyline,
+                director = director,
+                genre = genre
+            )
+
             if (isOnline()) {
-                // Jika online, simpan ke Firestore
-                val film = FilmModel(title, imageUrl, rating, storyline, director, genre)
-                filmCollectionRef.add(film)
+                // Jika online, tambahkan data ke Firestore
+                filmCollectionRef.add(filmEntity)
                     .addOnSuccessListener {
-                        showToast("Success to add film to Firestore")
+                        showToast("Film berhasil ditambah ke Firestore")
                         Log.d("AddDataActivity", "Film added to Firestore")
-                        finish()
                     }
                     .addOnFailureListener { e ->
                         Log.e("AddDataActivity", "Error adding film to Firestore", e)
-                        showToast("Failed to add film to Firestore")
+                        showToast("Gagal upload data ke Firestore")
                     }
-            } else {
-                // Jika offline, simpan ke RoomDatabase
-                insertFilmToRoom(
-                    FilmEntity(
-                        title = title,
-                        imageUrl = imageUrl,
-                        rating = rating,
-                        storyline = storyline,
-                        director = director,
-                        genre = genre
-                    )
-                )
-                showToast("Film added to RoomDatabase (offline)")
-                finish()
             }
+
+            // Selalu tambahkan data ke Room
+            insertFilmToRoom(filmEntity)
+            showToast("Film ditambah ke RoomDatabase")
+
+            finish()
         } else {
             Log.d("AddDataActivity", "Some data is missing")
-            showToast("Please complete all data")
+            showToast("Lengkapi semua data")
         }
     }
 
     private fun insertFilmToRoom(filmEntity: FilmEntity) {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             filmDao.insertAll(filmEntity)
         }
     }

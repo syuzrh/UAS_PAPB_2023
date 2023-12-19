@@ -1,6 +1,7 @@
 package com.example.uas_papb_2023.RoomDatabase
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,4 +14,7 @@ interface FilmDao {
 
     @Query("SELECT * FROM films")
     fun getAllFilmsList(): List<FilmEntity>
+
+    @Delete
+    fun delete(filmEntity: FilmEntity)
 }

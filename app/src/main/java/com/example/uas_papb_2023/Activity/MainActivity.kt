@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.uas_papb_2023.Fragment.AccountFragment
@@ -15,6 +16,7 @@ import com.example.uas_papb_2023.R
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val sharedPreferencesKey = "userLoggedIn"
+    private val sharedPreferencesRole = "userRole"
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,37 +24,33 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        sharedPreferences = getSharedPreferences(
-            "com.example.uas_papb_2023",
-            Context.MODE_PRIVATE
-        )
+        sharedPreferences = getSharedPreferences("user_shared", Context.MODE_PRIVATE)
 
-        // Cek apakah pengguna sudah login sebelumnya
+        binding.bottomNav.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> replaceFragment(HomeFragment())
+                R.id.nav_favorite -> replaceFragment(FavoriteFragment())
+                R.id.nav_account -> replaceFragment(AccountFragment())
+            }
+            true
+        }
+
         if (!isLoggedIn()) {
-            // Pengguna belum login, arahkan ke halaman login
+            Log.d("Cek Login", "Pengguna belum login atau memiliki peran selain \"USER\"")
             redirectToLogin()
         } else {
-            // Pengguna sudah login, lanjutkan dengan proses normal
             replaceFragment(HomeFragment())
-
-            binding.bottomNav.setOnItemSelectedListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.nav_home -> replaceFragment(HomeFragment())
-                    R.id.nav_favorite -> replaceFragment(FavoriteFragment())
-                    R.id.nav_account -> replaceFragment(AccountFragment())
-                }
-                true
-            }
         }
     }
 
     private fun isLoggedIn(): Boolean {
-        // Mengambil status login dari SharedPreferences
-        return sharedPreferences.getBoolean(sharedPreferencesKey, false)
+        val isLoggedIn = sharedPreferences.getBoolean(sharedPreferencesKey, false)
+        val userRole = sharedPreferences.getString(sharedPreferencesRole, "")
+
+        return isLoggedIn && userRole == "USER"
     }
 
     private fun redirectToLogin() {
-        // Mengarahkan pengguna ke halaman login
         val intent = Intent(this, LoginRegisterActivity::class.java)
         startActivity(intent)
         finish()

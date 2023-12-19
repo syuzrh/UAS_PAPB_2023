@@ -2,12 +2,15 @@ package com.example.uas_papb_2023.Activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +24,7 @@ import com.example.uas_papb_2023.databinding.ActivityAdminBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -39,12 +43,24 @@ class AdminActivity : AppCompatActivity() {
         private const val ADD_DATA_REQUEST_CODE = 1
     }
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private val sharedPreferencesKey = "userLoggedIn"
+    private val sharedPreferencesRole = "userRole"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Inisialisasi adapter dengan parameter yang sesuai
+        adapter = FilmAdapter(this, mutableListOf(), "ADMIN") { filmEntity ->
+            showDeleteConfirmationDialog(filmEntity)
+        }
+
+        // Inisialisasi filmDao dengan instance dari FilmDatabase
         filmDao = FilmDatabase.getDatabase(applicationContext).filmDao()
+
+        sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
 
         val btnAdd: FloatingActionButton = findViewById(R.id.btn_add)
         btnAdd.setOnClickListener {
@@ -55,7 +71,6 @@ class AdminActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        adapter = FilmAdapter(this, mutableListOf())
         recyclerView.adapter = adapter
 
         if (isOnline()) {
@@ -81,6 +96,54 @@ class AdminActivity : AppCompatActivity() {
         }
     }
 
+    private fun showDeleteConfirmationDialog(filmEntity: FilmEntity) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Konfirmasi Hapus")
+        builder.setMessage("Apakah Anda yakin ingin menghapus film ini?")
+
+        builder.setPositiveButton("Ya") { _, _ ->
+            // Hapus film dari Firestore
+            deleteFilmFromFirestore(filmEntity)
+
+            // Hapus film dari RoomDatabase
+            deleteFilmFromRoom(filmEntity)
+        }
+
+        builder.setNegativeButton("Tidak") { _, _ ->
+            // Batal
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun deleteFilmFromFirestore(filmEntity: FilmEntity) {
+        filmCollectionRef
+            .whereEqualTo("title", filmEntity.title)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    filmCollectionRef.document(document.id).delete()
+                    Log.d("AdminActivity", "Film deleted from Firestore")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("AdminActivity", "Error deleting film from Firestore", e)
+            }
+    }
+
+    private fun deleteFilmFromRoom(filmEntity: FilmEntity) {
+        GlobalScope.launch {
+            filmDao.delete(filmEntity)
+            Log.d("AdminActivity", "Film deleted from RoomDatabase")
+
+            // Setelah menghapus data, perbarui status login dan peran pengguna di SharedPreferences
+            sharedPreferences.edit {
+                putBoolean(sharedPreferencesKey, true)
+                putString(sharedPreferencesRole, "ADMIN")
+            }
+        }
+    }
 
     private fun loadFilmFromFirestore() {
         Log.d("AdminActivity", "Mengambil data dari Firestore")
@@ -94,6 +157,12 @@ class AdminActivity : AppCompatActivity() {
                 filmListLiveData.postValue(films)
                 observeFilmChanges()
                 Log.d("AdminActivity", "Data berhasil diambil dari Firestore: ${films.size} item")
+
+                // Setelah mengambil data, perbarui status login dan peran pengguna di SharedPreferences
+                sharedPreferences.edit {
+                    putBoolean(sharedPreferencesKey, true)
+                    putString(sharedPreferencesRole, "ADMIN")
+                }
             }
         }
     }
@@ -103,10 +172,10 @@ class AdminActivity : AppCompatActivity() {
             try {
                 Log.d("AdminActivity", "Trying to get films from Room")
                 val filmList = filmDao.getAllFilmsList()
-                Log.d("AdminActivity", "Number of films from Room: ${filmList.size}")
 
                 runOnUiThread {
-                    adapter.setData(filmList)
+                    // Setelah mengambil data, perbarui status login dan peran pengguna di SharedPreferences
+                    adapter.setData(this@AdminActivity, filmList, "ADMIN")
                 }
             } catch (e: Exception) {
                 Log.e("AdminActivity", "Error retrieving films from Room", e)
@@ -115,8 +184,9 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun observeFilmChanges() {
-        filmListLiveData.observe(this) { film ->
-            adapter.setData(film)
+        filmListLiveData.observe(this) { filmList ->
+            // Perbarui adapter dengan data yang diperoleh dari LiveData
+            adapter.setData(this@AdminActivity, filmList ?: listOf(), "ADMIN")
         }
     }
 }

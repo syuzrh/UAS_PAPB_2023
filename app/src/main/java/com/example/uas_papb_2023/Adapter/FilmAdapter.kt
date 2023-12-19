@@ -8,14 +8,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.uas_papb_2023.Activity.DetailsActivity
-import com.example.uas_papb_2023.Model.FilmModel
-import com.example.uas_papb_2023.R
 import com.bumptech.glide.Glide
+import com.example.uas_papb_2023.Activity.DetailsActivity
+import com.example.uas_papb_2023.R
 import com.example.uas_papb_2023.RoomDatabase.FilmEntity
 
-class FilmAdapter(private val context: Context, private var filmList: List<FilmEntity>) :
-    RecyclerView.Adapter<FilmAdapter.ViewHolder>() {
+class FilmAdapter(
+    private var context: Context,
+    private var filmList: List<FilmEntity>,
+    private var userRole: String,
+    private val onLongItemClickListener: (FilmEntity) -> Unit
+) : RecyclerView.Adapter<FilmAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgFilm: ImageView = itemView.findViewById(R.id.imgFilm)
@@ -49,14 +52,22 @@ class FilmAdapter(private val context: Context, private var filmList: List<FilmE
             intent.putExtra("genre", film.genre)
             context.startActivity(intent)
         }
+
+        // Tambahkan listener untuk aksi klik lama pada item
+        holder.itemView.setOnLongClickListener {
+            onLongItemClickListener(film)
+            true
+        }
     }
 
     override fun getItemCount(): Int {
         return filmList.size
     }
 
-    fun setData(newFilmList: List<FilmEntity>) {
-        filmList = newFilmList
+    fun setData(context: Context, filmList: List<FilmEntity>, userRole: String) {
+        this.context = context
+        this.filmList = filmList
+        this.userRole = userRole // Mengganti nilai userRole dengan nilai yang baru
         notifyDataSetChanged()
     }
 }

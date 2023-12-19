@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.uas_papb_2023.Adapter.FilmAdapter
+import com.example.uas_papb_2023.Model.UserRole
 import com.example.uas_papb_2023.RoomDatabase.FilmDatabase
 import com.example.uas_papb_2023.RoomDatabase.FilmEntity
 import com.example.uas_papb_2023.databinding.FragmentHomeBinding
@@ -34,6 +35,7 @@ class HomeFragment : Fragment() {
     private val filmCollectionRef = firestore.collection("films")
     private lateinit var filmListLiveData: MutableLiveData<List<FilmEntity>>
     private lateinit var filmDatabase: FilmDatabase
+    private lateinit var filmAdapter: FilmAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +59,11 @@ class HomeFragment : Fragment() {
 
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        filmAdapter = FilmAdapter(requireContext(), emptyList(), UserRole.ADMIN.toString()) { filmEntity ->
+        }
+
+        recyclerView.adapter = filmAdapter
 
         if (isConnectedToInternet()) {
             getFilmDataFromFirebase()
@@ -109,12 +116,7 @@ class HomeFragment : Fragment() {
 
     private fun observeFilmList() {
         filmListLiveData.observe(viewLifecycleOwner, Observer { filmList ->
-            updateRecyclerView(filmList)
+            filmAdapter.setData(requireContext(), filmList, UserRole.ADMIN.toString())
         })
-    }
-
-    private fun updateRecyclerView(filmList: List<FilmEntity>) {
-        val adapter = FilmAdapter(requireContext(), filmList)
-        recyclerView.adapter = adapter
     }
 }
