@@ -8,6 +8,8 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
@@ -189,4 +191,39 @@ class AdminActivity : AppCompatActivity() {
             adapter.setData(this@AdminActivity, filmList ?: listOf(), "ADMIN")
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_admin, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.btn_logout -> {
+                val sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
+                val userRole = sharedPreferences.getString("userRole", "")
+
+                if (userRole == "ADMIN") {
+                    logoutAdmin()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun logoutAdmin() {
+        // Hapus informasi login dari SharedPreferences
+        val sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
+        sharedPreferences.edit {
+            putBoolean("userLoggedIn", false)
+            putString("userRole", "")
+        }
+
+        // Redirect ke halaman login setelah logout
+        val intent = Intent(this, LoginRegisterActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
 }

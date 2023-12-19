@@ -53,7 +53,6 @@ class FilmAdapter(
             context.startActivity(intent)
         }
 
-        // Tambahkan listener untuk aksi klik lama pada item
         holder.itemView.setOnLongClickListener {
             onLongItemClickListener(film)
             true
@@ -67,7 +66,7 @@ class FilmAdapter(
     fun setData(context: Context, filmList: List<FilmEntity>, userRole: String) {
         this.context = context
         this.filmList = filmList
-        this.userRole = userRole // Mengganti nilai userRole dengan nilai yang baru
+        this.userRole = userRole
         notifyDataSetChanged()
     }
 }
