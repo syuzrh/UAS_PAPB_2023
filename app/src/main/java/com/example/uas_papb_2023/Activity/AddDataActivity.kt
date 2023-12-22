@@ -71,7 +71,6 @@ class AddDataActivity : AppCompatActivity() {
         ) {
             imageUri?.let{
                 it1 -> store.putFile(it1).addOnCompleteListener(){
-                    Log.d("errorrrrrr", it.exception.toString())
                     if (it.isSuccessful){
                         store.downloadUrl.addOnSuccessListener { uri->
                             val film = FilmEntity2(
@@ -86,18 +85,18 @@ class AddDataActivity : AppCompatActivity() {
                             MOVIES.add(film).addOnSuccessListener { res ->
                                 film.id = res.id
                                 res.set(film).addOnSuccessListener {
-                                    Toast.makeText(this@AddDataActivity, "Berhasil menambahkan data", Toast.LENGTH_SHORT).show()
+                                    showToast("Berhasil menambahkan data")
                                     finish()
                                 }.addOnFailureListener {
-                                    Toast.makeText(this@AddDataActivity, "Gagal menambahkan data", Toast.LENGTH_SHORT).show()
+                                    showToast("Gagal menambahkan data")
                                 }
                             }.addOnFailureListener(){err->
-                                Toast.makeText(this@AddDataActivity, "Gagal menambahkan data", Toast.LENGTH_SHORT).show()
+                                showToast("Gagal menambahkan data")
                             }
                         }
                     }else{
                         Log.d("AddDataActivity", "Gagal upload gambar error : ${it.exception.toString()}")
-                        Toast.makeText(this@AddDataActivity, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                        showToast("Gagal menambahkan gambar")
                 }
             }
             }
