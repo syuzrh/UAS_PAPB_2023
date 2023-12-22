@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
 import com.example.uas_papb_2023.R
+import com.squareup.picasso.Picasso
 
 class DetailsActivity : AppCompatActivity() {
 
@@ -26,12 +28,9 @@ class DetailsActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         )
 
-        // Cek apakah pengguna sudah login sebelumnya
         if (!isLoggedIn()) {
-            // Pengguna belum login, arahkan ke halaman login
             redirectToLogin()
         } else {
-            // Pengguna sudah login, lanjutkan dengan proses normal
             val title = intent.getStringExtra("title")
             val imageUrl = intent.getStringExtra("imageUrl")
             val rating = intent.getStringExtra("rating")
@@ -40,6 +39,9 @@ class DetailsActivity : AppCompatActivity() {
             val genre = intent.getStringExtra("genre")
 
             val imgFilm: ImageView = findViewById(R.id.filmImage)
+            imgFilm.setImageURI(Uri.parse(imageUrl))
+            Picasso.get().load(imageUrl).into(imgFilm)
+            Log.d("url film", imgFilm.id.toString())
             val txtTitle: TextView = findViewById(R.id.title_id)
             val txtDirector: TextView = findViewById(R.id.director_id)
             val txtRating: TextView = findViewById(R.id.rate_id)
@@ -51,10 +53,6 @@ class DetailsActivity : AppCompatActivity() {
                 finish()
             }
 
-            Glide.with(this)
-                .load(imageUrl)
-                .into(imgFilm)
-
             txtTitle.text = title
             txtDirector.text = "$director |"
             txtRating.text = rating
@@ -64,12 +62,10 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     private fun isLoggedIn(): Boolean {
-        // Mengambil status login dari SharedPreferences
         return sharedPreferences.getBoolean(sharedPreferencesKey, false)
     }
 
     private fun redirectToLogin() {
-        // Mengarahkan pengguna ke halaman login
         val intent = Intent(this, LoginRegisterActivity::class.java)
         startActivity(intent)
         finish()

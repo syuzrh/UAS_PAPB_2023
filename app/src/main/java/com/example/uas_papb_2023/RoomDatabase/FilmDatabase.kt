@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [FilmEntity::class], version = 1, exportSchema = false)
+@Database(entities = [FilmEntity2::class], version = 1, exportSchema = false)
 abstract class FilmDatabase : RoomDatabase() {
     abstract fun filmDao(): FilmDao
 
@@ -18,7 +18,7 @@ abstract class FilmDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     FilmDatabase::class.java,
-                    "film_database"
+                    "films_database"
                 ).build()
                 INSTANCE = instance
                 instance

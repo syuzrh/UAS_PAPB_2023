@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +19,9 @@
         android:theme="@style/Theme.UAS_PAPB_2023"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.EditDataActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.AddDataActivity"
             android:exported="false" />
         <activity
@@ -22,8 +29,8 @@
             android:exported="false" />
         <activity
             android:name=".Activity.AdminActivity"
-            android:theme="@style/Theme.OptionsMenu_Tab.ActionBar"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.OptionsMenu_Tab.ActionBar" />
         <activity
             android:name=".Activity.LoginRegisterActivity"
             android:exported="false" />

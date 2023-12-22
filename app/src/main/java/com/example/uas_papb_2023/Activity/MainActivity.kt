@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.uas_papb_2023.Fragment.AccountFragment
-import com.example.uas_papb_2023.Fragment.FavoriteFragment
 import com.example.uas_papb_2023.Fragment.HomeFragment
 import com.example.uas_papb_2023.databinding.ActivityMainBinding
 import com.example.uas_papb_2023.R
@@ -24,12 +23,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        sharedPreferences = getSharedPreferences("user_shared", Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
 
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> replaceFragment(HomeFragment())
-                R.id.nav_favorite -> replaceFragment(FavoriteFragment())
                 R.id.nav_account -> replaceFragment(AccountFragment())
             }
             true

@@ -15,13 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.uas_papb_2023.Adapter.FilmAdapter
 import com.example.uas_papb_2023.R
 import com.example.uas_papb_2023.RoomDatabase.FilmDao
 import com.example.uas_papb_2023.RoomDatabase.FilmDatabase
-import com.example.uas_papb_2023.RoomDatabase.FilmEntity
+import com.example.uas_papb_2023.RoomDatabase.FilmEntity2
 import com.example.uas_papb_2023.databinding.ActivityAdminBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,8 +38,8 @@ class AdminActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val firestore = FirebaseFirestore.getInstance()
     private val filmCollectionRef = firestore.collection("films")
-    private val filmListLiveData: MutableLiveData<List<FilmEntity>> by lazy {
-        MutableLiveData<List<FilmEntity>>()
+    private val filmListLiveData: MutableLiveData<List<FilmEntity2>> by lazy {
+        MutableLiveData<List<FilmEntity2>>()
     }
     companion object {
         private const val ADD_DATA_REQUEST_CODE = 1
@@ -54,12 +54,11 @@ class AdminActivity : AppCompatActivity() {
         binding = ActivityAdminBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inisialisasi adapter dengan parameter yang sesuai
-        adapter = FilmAdapter(this, mutableListOf(), "ADMIN") { filmEntity ->
-            showDeleteConfirmationDialog(filmEntity)
-        }
+        adapter = FilmAdapter(this, mutableListOf(), "ADMIN",
+            { filmEntity -> showDeleteConfirmationDialog(filmEntity) },
+            { filmEntity -> editFilm(filmEntity) }
+        )
 
-        // Inisialisasi filmDao dengan instance dari FilmDatabase
         filmDao = FilmDatabase.getDatabase(applicationContext).filmDao()
 
         sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
@@ -71,7 +70,7 @@ class AdminActivity : AppCompatActivity() {
         }
 
         recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         recyclerView.adapter = adapter
 
@@ -98,30 +97,27 @@ class AdminActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDeleteConfirmationDialog(filmEntity: FilmEntity) {
+    private fun showDeleteConfirmationDialog(filmEntity2: FilmEntity2) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Konfirmasi Hapus")
         builder.setMessage("Apakah Anda yakin ingin menghapus film ini?")
 
         builder.setPositiveButton("Ya") { _, _ ->
-            // Hapus film dari Firestore
-            deleteFilmFromFirestore(filmEntity)
+            deleteFilmFromFirestore(filmEntity2)
 
-            // Hapus film dari RoomDatabase
-            deleteFilmFromRoom(filmEntity)
+            deleteFilmFromRoom(filmEntity2)
         }
 
         builder.setNegativeButton("Tidak") { _, _ ->
-            // Batal
         }
 
         val dialog = builder.create()
         dialog.show()
     }
 
-    private fun deleteFilmFromFirestore(filmEntity: FilmEntity) {
+    private fun deleteFilmFromFirestore(filmEntity2: FilmEntity2) {
         filmCollectionRef
-            .whereEqualTo("title", filmEntity.title)
+            .whereEqualTo("title", filmEntity2.title)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
@@ -134,12 +130,11 @@ class AdminActivity : AppCompatActivity() {
             }
     }
 
-    private fun deleteFilmFromRoom(filmEntity: FilmEntity) {
+    private fun deleteFilmFromRoom(filmEntity2: FilmEntity2) {
         GlobalScope.launch {
-            filmDao.delete(filmEntity)
+            filmDao.delete(filmEntity2)
             Log.d("AdminActivity", "Film deleted from RoomDatabase")
 
-            // Setelah menghapus data, perbarui status login dan peran pengguna di SharedPreferences
             sharedPreferences.edit {
                 putBoolean(sharedPreferencesKey, true)
                 putString(sharedPreferencesRole, "ADMIN")
@@ -151,23 +146,28 @@ class AdminActivity : AppCompatActivity() {
         Log.d("AdminActivity", "Mengambil data dari Firestore")
         filmCollectionRef.addSnapshotListener { snapshots, error ->
             if (error != null) {
-                Log.d("AdminActivity", "Error listening for film changes: ", error)
+                Log.e("AdminActivity", "Error listening for film changes", error)
                 return@addSnapshotListener
             }
-            val films = snapshots?.toObjects(FilmEntity::class.java)
-            if (films != null) {
-                filmListLiveData.postValue(films)
-                observeFilmChanges()
-                Log.d("AdminActivity", "Data berhasil diambil dari Firestore: ${films.size} item")
 
-                // Setelah mengambil data, perbarui status login dan peran pengguna di SharedPreferences
-                sharedPreferences.edit {
-                    putBoolean(sharedPreferencesKey, true)
-                    putString(sharedPreferencesRole, "ADMIN")
+            try {
+                val films = snapshots?.toObjects(FilmEntity2::class.java)
+                if (films != null) {
+                    filmListLiveData.postValue(films)
+                    observeFilmChanges()
+                    Log.d("AdminActivity", "Data berhasil diambil dari Firestore: ${films.size} item")
+
+                    sharedPreferences.edit {
+                        putBoolean(sharedPreferencesKey, true)
+                        putString(sharedPreferencesRole, "ADMIN")
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("AdminActivity", "Error converting Firestore snapshot to FilmEntity2", e)
             }
         }
     }
+
 
     private fun getFilmDataFromRoom() {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -176,7 +176,6 @@ class AdminActivity : AppCompatActivity() {
                 val filmList = filmDao.getAllFilmsList()
 
                 runOnUiThread {
-                    // Setelah mengambil data, perbarui status login dan peran pengguna di SharedPreferences
                     adapter.setData(this@AdminActivity, filmList, "ADMIN")
                 }
             } catch (e: Exception) {
@@ -187,7 +186,6 @@ class AdminActivity : AppCompatActivity() {
 
     private fun observeFilmChanges() {
         filmListLiveData.observe(this) { filmList ->
-            // Perbarui adapter dengan data yang diperoleh dari LiveData
             adapter.setData(this@AdminActivity, filmList ?: listOf(), "ADMIN")
         }
     }
@@ -213,17 +211,45 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun logoutAdmin() {
-        // Hapus informasi login dari SharedPreferences
         val sharedPreferences = getSharedPreferences("shared", Context.MODE_PRIVATE)
         sharedPreferences.edit {
             putBoolean("userLoggedIn", false)
             putString("userRole", "")
         }
 
-        // Redirect ke halaman login setelah logout
         val intent = Intent(this, LoginRegisterActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun editFilm(filmEntity2: FilmEntity2) {
+        if (isOnline()) {
+            getFilmFromFirestoreForEdit(filmEntity2)
+        } else {
+            openEditForm(filmEntity2)
+        }
+    }
+
+    private fun getFilmFromFirestoreForEdit(filmEntity2: FilmEntity2) {
+        filmCollectionRef
+            .whereEqualTo("title", filmEntity2.title)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val film = document.toObject(FilmEntity2::class.java)
+                    openEditForm(film)
+                    break
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("AdminActivity", "Error getting film data from Firestore for edit", e)
+            }
+    }
+
+    private fun openEditForm(filmEntity2: FilmEntity2) {
+        val intent = Intent(this@AdminActivity, EditDataActivity::class.java)
+        intent.putExtra("filmEntity2", filmEntity2)
+        startActivity(intent)
     }
 
 }

@@ -68,39 +68,32 @@ class LoginFragment : Fragment() {
             }
     }
 
-    // Metode untuk menyimpan informasi pengguna di SharedPreferences
     private fun saveUserInfoToSharedPreferences(querySnapshot: QuerySnapshot) {
         if (!querySnapshot.isEmpty) {
             val userDocument = querySnapshot.documents[0]
 
-            // Gunakan nama file SharedPreferences yang lebih deskriptif
             val sharedPreferences =
-                requireActivity().getSharedPreferences("user_shared", Context.MODE_PRIVATE)
+                requireActivity().getSharedPreferences("shared", Context.MODE_PRIVATE)
 
-            // Simpan informasi pengguna di SharedPreferences
             val editor = sharedPreferences.edit()
             editor.putString("email", userDocument.getString("email"))
             editor.putString("userRole", userDocument.getString("userRole"))
             editor.apply()
 
-            // Panggil metode onSuccessLogin() dari MainActivity
             onSuccessLogin()
         }
     }
 
-    // Metode untuk menentukan aktivitas yang akan dijalankan berdasarkan peran pengguna
     private fun onSuccessLogin() {
-        val sharedPreferences = requireActivity().getSharedPreferences("user_shared", Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences("shared", Context.MODE_PRIVATE)
         val userRole = sharedPreferences.getString("userRole", "")
         Log.d("LoginFragment", "User Role: $userRole")
 
-        // Perbarui status login dan peran pengguna di SharedPreferences
         sharedPreferences.edit {
             putBoolean("userLoggedIn", true)
             putString("userRole", userRole)
         }
 
-        // Berdasarkan peran pengguna, arahkan ke aktivitas yang sesuai
         when (userRole) {
             "ADMIN" -> {
                 Log.d("LoginFragment", "Redirect to AdminActivity")

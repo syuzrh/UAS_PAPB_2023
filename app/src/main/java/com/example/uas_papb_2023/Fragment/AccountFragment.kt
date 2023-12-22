@@ -44,7 +44,6 @@ class AccountFragment : Fragment() {
         logoutButton.setOnClickListener {
             auth.signOut()
 
-            // Cek status login sebelum menavigasi ke halaman login
             val isLoggedIn = checkLoginStatus()
             if (!isLoggedIn) {
                 val intent = Intent(requireContext(), LoginRegisterActivity::class.java)

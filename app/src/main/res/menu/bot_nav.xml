@@ -9,12 +9,6 @@
         android:title="Home"
         android:icon="@drawable/baseline_home_24_white"/>
     <item
-        android:id="@+id/nav_favorite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:title="Favorite"
-        android:icon="@drawable/baseline_favorite_24_white"/>
-    <item
         android:id="@+id/nav_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

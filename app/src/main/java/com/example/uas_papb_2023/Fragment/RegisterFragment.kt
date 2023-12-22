@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.example.uas_papb_2023.Activity.LoginRegisterActivity
 import com.example.uas_papb_2023.Model.UserModel
 import com.example.uas_papb_2023.Model.UserRole
+import com.example.uas_papb_2023.Notif.NotifReceiver
 import com.example.uas_papb_2023.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -52,10 +53,12 @@ class RegisterFragment : Fragment() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    // Pengguna berhasil mendaftar, simpan informasi di Firestore
                     val newUser = UserModel(auth.currentUser?.uid, email, password, UserRole.USER)
                     saveUserToFirestore(newUser)
                     Toast.makeText(requireContext(), "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
+
+                    NotifReceiver.showNotification(requireContext(), "Registrasi berhasil! Silahkan Login.")
+
                     saveLoginStatus(true)
                     finish()
                 } else {
@@ -69,7 +72,6 @@ class RegisterFragment : Fragment() {
     }
 
     private fun saveUserToFirestore(newUser: UserModel) {
-        // Simpan informasi pengguna di Firestore
         userCollection.document(newUser.id ?: "").set(newUser)
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Gagal menyimpan data pengguna di Firestore.", Toast.LENGTH_SHORT).show()

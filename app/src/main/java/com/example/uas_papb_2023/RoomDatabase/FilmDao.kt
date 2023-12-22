@@ -5,16 +5,20 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
+import androidx.room.Update
 
 @Dao
 interface FilmDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(films: FilmEntity)
+    fun insertAll(films: FilmEntity2)
 
     @Query("SELECT * FROM films")
-    fun getAllFilmsList(): List<FilmEntity>
+    fun getAllFilmsList(): List<FilmEntity2>
 
     @Delete
-    fun delete(filmEntity: FilmEntity)
+    fun delete(filmEntity2: FilmEntity2)
+
+    @Update
+    fun update(films: FilmEntity2)
+
 }
