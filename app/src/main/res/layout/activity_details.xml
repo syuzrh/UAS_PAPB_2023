@@ -46,12 +46,11 @@
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <!-- Menggunakan ImageView dari XML -->
                 <ImageView
                     android:id="@+id/filmImage"
                     android:layout_width="320dp"
                     android:layout_height="400dp"
-                    android:src="@drawable/film" />
+                    android:src="@drawable/film"/>
             </LinearLayout>
 
             <LinearLayout

@@ -24,7 +24,7 @@ class DetailsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_details)
 
         sharedPreferences = getSharedPreferences(
-            "com.example.uas_papb_2023",
+            "shared",
             Context.MODE_PRIVATE
         )
 

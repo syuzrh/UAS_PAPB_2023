@@ -39,7 +39,7 @@
         <ImageView
             android:id="@+id/add_image"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="200dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bginput"
             android:src="@drawable/baseline_add_photo_alternate_24"/>

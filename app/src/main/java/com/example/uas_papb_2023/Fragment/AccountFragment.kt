@@ -42,21 +42,46 @@ class AccountFragment : Fragment() {
         userType.text = "Public User"
 
         logoutButton.setOnClickListener {
+            // Melakukan logout dari FirebaseAuth
             auth.signOut()
 
+            // Mengupdate status login ke false di SharedPreferences
+            updateLoginStatus(false)
+
+            // Memeriksa apakah logout berhasil
             val isLoggedIn = checkLoginStatus()
+
+            // Jika berhasil logout, pindahkan ke halaman LoginRegisterActivity
             if (!isLoggedIn) {
+                // Menggunakan Intent untuk pindah ke LoginRegisterActivity
                 val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
+
+                // Menjalankan Intent
                 startActivity(intent)
+
                 requireActivity().finish()
             }
         }
-
         return view
     }
 
+    private fun updateLoginStatus(isLoggedIn: Boolean) {
+        // Mendapatkan instance dari SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("shared", Context.MODE_PRIVATE)
+
+        // Membuat instance dari Editor untuk mengedit SharedPreferences
+        val editor = sharedPreferences.edit()
+
+        // Menyimpan status login ke SharedPreferences
+        editor.putBoolean("isLoggedIn", isLoggedIn)
+
+        // Melakukan commit agar perubahan disimpan
+        editor.apply()
+    }
+
     private fun checkLoginStatus(): Boolean {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val sharedPreferences = requireContext().getSharedPreferences("shared", Context.MODE_PRIVATE)
+
         return sharedPreferences.getBoolean("isLoggedIn", false)
     }
 }

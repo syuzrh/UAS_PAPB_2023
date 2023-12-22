@@ -217,7 +217,7 @@ class AdminActivity : AppCompatActivity() {
             putString("userRole", "")
         }
 
-        val intent = Intent(this, LoginRegisterActivity::class.java)
+        val intent = Intent(this@AdminActivity, LoginRegisterActivity::class.java)
         startActivity(intent)
         finish()
     }

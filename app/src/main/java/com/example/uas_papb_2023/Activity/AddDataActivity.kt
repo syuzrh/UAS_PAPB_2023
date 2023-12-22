@@ -67,10 +67,11 @@ class AddDataActivity : AppCompatActivity() {
 
 
         if (title.isNotEmpty() && rating.isNotEmpty() &&
-            storyline.isNotEmpty() && director.isNotEmpty() && genre.isNotEmpty() && isOnline()
+            storyline.isNotEmpty() && director.isNotEmpty() && genre.isNotEmpty()
         ) {
-            imageUri?.let{
-                it1 -> store.putFile(it1).addOnCompleteListener(){
+            if (isOnline()){
+                imageUri?.let{
+                        it1 -> store.putFile(it1).addOnCompleteListener(){
                     if (it.isSuccessful){
                         store.downloadUrl.addOnSuccessListener { uri->
                             val film = FilmEntity2(
@@ -97,24 +98,38 @@ class AddDataActivity : AppCompatActivity() {
                     }else{
                         Log.d("AddDataActivity", "Gagal upload gambar error : ${it.exception.toString()}")
                         showToast("Gagal menambahkan gambar")
+                    }
                 }
+                }
+
+                Log.d("AddDataActivity", "All data is present, adding to Firestore and Room")
+
+                val filmEntity2 = FilmEntity2(
+                    title = title,
+                    imageUrl = imageUri.toString(),
+                    rating = rating,
+                    storyline = storyline,
+                    director = director,
+                    genre = genre
+                )
+
+                insertFilmToRoom(filmEntity2)
+                showToast("Film ditambah ke RoomDatabase")
+                finish()
             }
+            else{
+                val filmEntity2 = FilmEntity2(
+                    title = title,
+                    imageUrl = imageUri.toString(),
+                    rating = rating,
+                    storyline = storyline,
+                    director = director,
+                    genre = genre
+                )
+                insertFilmToRoom(filmEntity2)
+                showToast("Film ditambah ke RoomDatabase")
+                finish()
             }
-
-            Log.d("AddDataActivity", "All data is present, adding to Firestore and Room")
-
-            val filmEntity2 = FilmEntity2(
-                title = title,
-                imageUrl = imageUri.toString(),
-                rating = rating,
-                storyline = storyline,
-                director = director,
-                genre = genre
-            )
-
-            insertFilmToRoom(filmEntity2)
-            showToast("Film ditambah ke RoomDatabase")
-            finish()
         } else {
             Log.d("AddDataActivity", "Some data is missing")
             showToast("Lengkapi semua data")

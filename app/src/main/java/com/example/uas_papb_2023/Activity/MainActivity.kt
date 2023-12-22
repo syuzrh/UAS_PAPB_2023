@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun redirectToLogin() {
-        val intent = Intent(this, LoginRegisterActivity::class.java)
+        val intent = Intent(this@MainActivity, LoginRegisterActivity::class.java)
         startActivity(intent)
         finish()
     }
